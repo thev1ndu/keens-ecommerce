@@ -1,6 +1,6 @@
 <?php
 session_start();
-$conn = new mysqli('localhost', 'root', '', 'ecommerce');
+$conn = new mysqli('http://api.8t33n.cfd', 'aa', '11223344', 'ecommerce');
 
 // Check connection
 if ($conn->connect_error) {
