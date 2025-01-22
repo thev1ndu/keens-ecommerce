@@ -7,26 +7,30 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      # Checkout the repository
       - uses: actions/checkout@v3
-      
+
+      # Set up SSH and known hosts
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh/
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
-      
+
+      # Deploy files using rsync
       - name: Deploy to VPS
         run: |
           rsync -avz --delete \
-            -e 'ssh -i ~/.ssh/deploy_key' \
+            -e 'ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no' \
             --exclude '.git*' \
             --exclude 'node_modules' \
             ./ ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/var/www/html/
-      
+
+      # Run post-deploy commands on the remote server
       - name: Post-deploy commands
         run: |
-          ssh -i ~/.ssh/deploy_key ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} '
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} '
             cd /var/www/html &&
             composer install --no-dev --optimize-autoloader &&
             php artisan cache:clear &&
