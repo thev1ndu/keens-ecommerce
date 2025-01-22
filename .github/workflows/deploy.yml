@@ -1,49 +1,36 @@
-name: CI/CD Pipeline
+name: Deploy to VPS
 
 on:
   push:
     branches:
-      - main
+      - main  # Trigger deployment on pushing to the main branch
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+    # Checkout code
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-    - name: Setup SSH
+    # Set up SSH
+    - name: Set up SSH
       run: |
-        mkdir -p ~/.ssh 
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        mkdir -p ~/.ssh
+        echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
-        # Optional: Set the SSH timeout to avoid long waits for large projects
-        echo "ServerAliveInterval 60" >> ~/.ssh/config
-        echo "ServerAliveCountMax 5" >> ~/.ssh/config
+        ssh-keyscan -H $VPS_IP >> ~/.ssh/known_hosts
 
-    - name: Deploy to Server
+    # Deploy to VPS (Apache2, root user)
+    - name: Deploy to VPS
       run: |
-        # Remove existing content in the deployment path and prepare for new deployment
-        ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "
-        echo 'Cleaning up old files in the deploy path...';
-        rm -rf ${{ secrets.DEPLOY_PATH }}/*;
-        echo 'Deploy path cleaned.'"
-        
-        # Copy new code to the server
-        echo 'Deploying new code...'
-        scp -r ./* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:${{ secrets.DEPLOY_PATH }}
-
-    - name: Set Up .htaccess
-      run: |
-        # Move .htaccess file to its proper location
-        ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "
-        echo 'Setting up .htaccess file...';
-        cd ${{ secrets.DEPLOY_PATH }};
-        if [ -f htaccess ]; then
-          mv htaccess .htaccess;
-          echo '.htaccess file moved successfully.';
-        else
-          echo 'htaccess file not found.';
-        fi"
+        ssh -o StrictHostKeyChecking=no root@$VPS_IP <<EOF
+          cd /var/www/html  # Assuming your website is served from Apache's default directory
+          git pull origin main  # or other commands for deployment
+          # You can also add commands like `composer install`, `npm install` etc.
+          # Example: restart Apache if needed
+          systemctl restart apache2
+        EOF
+      env:
+        VPS_IP: ${{ secrets.VPS_IP }}
