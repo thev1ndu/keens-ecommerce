@@ -20,7 +20,13 @@ jobs:
         mkdir -p ~/.ssh
         echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
+        # Ensure that the server's SSH host is in known_hosts
         ssh-keyscan -H $VPS_IP >> ~/.ssh/known_hosts
+
+    # Test SSH connection
+    - name: Test SSH connection
+      run: |
+        ssh -o StrictHostKeyChecking=no -v root@$VPS_IP "echo 'SSH connection successful'"
 
     # Deploy to VPS (Apache2, root user)
     - name: Deploy to VPS
