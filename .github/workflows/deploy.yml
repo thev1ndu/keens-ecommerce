@@ -19,18 +19,31 @@ jobs:
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+        # Optional: Set the SSH timeout to avoid long waits for large projects
+        echo "ServerAliveInterval 60" >> ~/.ssh/config
+        echo "ServerAliveCountMax 5" >> ~/.ssh/config
 
     - name: Deploy to Server
       run: |
+        # Remove existing content in the deployment path and prepare for new deployment
         ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "
-        mkdir -p ${{ secrets.DEPLOY_PATH }};
+        echo 'Cleaning up old files in the deploy path...';
         rm -rf ${{ secrets.DEPLOY_PATH }}/*;
-        exit 0;"
+        echo 'Deploy path cleaned.'"
+        
+        # Copy new code to the server
+        echo 'Deploying new code...'
         scp -r ./* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:${{ secrets.DEPLOY_PATH }}
 
     - name: Set Up .htaccess
       run: |
+        # Move .htaccess file to its proper location
         ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "
+        echo 'Setting up .htaccess file...';
         cd ${{ secrets.DEPLOY_PATH }};
-        mv htaccess .htaccess;
-        exit 0;"
+        if [ -f htaccess ]; then
+          mv htaccess .htaccess;
+          echo '.htaccess file moved successfully.';
+        else
+          echo 'htaccess file not found.';
+        fi"
