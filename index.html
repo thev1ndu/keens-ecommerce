@@ -1,6 +1,87 @@
-
-  <html>
-    <head><title>Hello</title></head>
-    <body><h1>Hello from Future</h1></body>
-  </html>
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keens e-Commerce API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom, #f0f4f8, #d9e8ff);
+            color: #333;
+        }
+        header {
+            background-color: #0077cc;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            animation: fadeIn 2s ease;
+        }
+        main {
+            padding: 20px;
+        }
+        .description {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        .description h2 {
+            font-size: 2em;
+            color: #0077cc;
+            animation: slideIn 1s ease;
+        }
+        .description p {
+            line-height: 1.6;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #0077cc;
+            color: #fff;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideIn {
+            from { transform: translateX(-50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Keens e-Commerce API</h1>
+    </header>
+    <main>
+        <div class="description">
+            <h2>Overview</h2>
+            <p>The Keens e-Commerce API provides seamless integration for managing your online store. This powerful API supports various functionalities, including:</p>
+            <ul>
+                <li>Product Catalog Management</li>
+                <li>Inventory and Stock Updates</li>
+                <li>Order Processing</li>
+                <li>Customer Management</li>
+                <li>Analytics and Reporting</li>
+            </ul>
+            <h2>Getting Started</h2>
+            <p>To get started, sign up for an API key, and integrate the endpoints into your application.</p>
+        </div>
+    </main>
+    <footer>
+        &copy; 2025 Keens e-Commerce. All rights reserved.
+    </footer>
+</body>
+</html>
